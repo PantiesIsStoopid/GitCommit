@@ -2,13 +2,11 @@ import os
 from random import randint, random, choice
 from datetime import datetime, timedelta
 
-# Automatically set start and end dates
-start_date = datetime.now() - timedelta(days=1)  # Yesterday
-end_date = datetime.now()  # Today
-
-# Commit range and zero-commit chance
-commit_range = (0, 13)  # Min and max commits per day
-zero_commit_chance = 20  # Percentage chance of a zero-commit day
+# Input dates, commit range, and zero-commit chance
+start_date_str = input("Enter the start date (dd/mm/yyyy): ")
+end_date_str = input("Enter the end date (dd/mm/yyyy): ")
+commit_range = input("Enter the commit range (x - y): ").split("-")
+zero_commit_chance = float(input("Enter the percentage chance of a 0-commit day (0-100): "))
 
 # List of random commit messages
 commit_messages = [
@@ -24,8 +22,17 @@ commit_messages = [
   "Improved error handling"
 ]
 
+# Parse dates and range
+start_date = datetime.strptime(start_date_str.strip(), '%d/%m/%Y')
+end_date = datetime.strptime(end_date_str.strip(), '%d/%m/%Y')
+
+if end_date < start_date:
+  print("End date must be after the start date.")
+  exit()
+
 # Calculate total days between dates
 total_days = (end_date - start_date).days
+x, y = int(commit_range[0]), int(commit_range[1])
 
 for i in range(total_days + 1):  # +1 to include the end date
   # Calculate the date for the commit
@@ -46,11 +53,10 @@ for i in range(total_days + 1):  # +1 to include the end date
 
   # Determine if today will be a 0-commit day based on the zero_commit_chance
   if random() < zero_commit_chance / 100:
-    print(f"Skipping commits for {commit_date.strftime('%Y-%m-%d')}")
     continue  # Skip this day (0 commits)
 
   # Randomize the number of commits for the day within range x - y
-  for j in range(randint(commit_range[0], commit_range[1])):
+  for j in range(randint(x, y)):
     # Choose a random commit message
     commit_message = choice(commit_messages)
     
@@ -71,5 +77,5 @@ for i in range(total_days + 1):  # +1 to include the end date
     os.system('git add file.txt')
     os.system(f'git commit --date="{commit_date_str}" -m "{commit_message}"')
 
-# Push all commits for the day to the remote repository
-os.system('git push --set-upstream origin master')
+  # Push all commits for the day to the remote repository
+  os.system('git push --set-upstream origin master')
