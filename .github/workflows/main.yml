@@ -1,49 +1,24 @@
-name: Randomized Daily Commits
+name: Automate Random Commits
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Runs daily
-  workflow_dispatch: # Allow manual testing
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual triggering for testing
 
 jobs:
   random-commits:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: '3.x'
 
-      - name: Generate random commits
-        run: |
-          python - <<EOF
-          import random
-          import os
-          from datetime import datetime
+      - name: Install Dependencies
+        run: pip install -r requirements.txt || true
 
-          # 20% chance to skip commits
-          if random.random() < 0.2:
-              print("No commits today.")
-              exit(0)
-
-          # Randomize the number of commits (0 to 13)
-          num_commits = random.randint(0, 13)
-          print(f"Generating {num_commits} commits for today.")
-
-          for i in range(num_commits):
-              # Update the file
-              with open("file.txt", "a") as file:
-                  file.write(f"Commit {i+1} on {datetime.now()}\n")
-
-              # Configure Git and commit
-              os.system("git config --global user.name 'Random Committer'")
-              os.system("git config --global user.email 'random@example.com'")
-              os.system("git add update.txt")
-              os.system(f"git commit -m 'Random commit {i+1} for {datetime.now()}'")
-
-          # Push changes
-          os.system("git push")
-          EOF
+      - name: Run Random Commit Script
+        run: python random_commit_script.py
