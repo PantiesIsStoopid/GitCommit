@@ -2,7 +2,8 @@ name: Randomized Daily Commits
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Runs daily at midnight UTC
+    - cron: "0 0 * * *" # Daily schedule
+  workflow_dispatch: # Enables manual trigger
 
 jobs:
   random-commits:
