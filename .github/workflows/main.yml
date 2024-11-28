@@ -1,0 +1,46 @@
+name: Randomized Daily Commits
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
+
+jobs:
+  random-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Generate random commits
+        run: |
+          import random
+          import os
+          from datetime import datetime
+
+          # 20% chance to skip commits
+          if random.random() < 0.2:
+              print("No commits today.")
+              exit(0)
+
+          # Randomize the number of commits (0 to 13)
+          num_commits = random.randint(0, 13)
+          print(f"Generating {num_commits} commits for today.")
+
+          for i in range(num_commits):
+              # Update the file
+              with open("file.txt", "a") as file:
+                  file.write(f"Commit {i+1} on {datetime.now()}\n")
+
+              # Configure Git and commit
+              os.system("git config --global user.name 'Random Committer'")
+              os.system("git config --global user.email 'nylewagjiani@gmail.com'")
+              os.system("git add update.txt")
+              os.system(f"git commit -m 'Random commit {i+1} for {datetime.now()}'")
+
+          # Push changes
+          os.system("git push")
