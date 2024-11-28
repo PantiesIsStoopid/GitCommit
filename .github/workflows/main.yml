@@ -35,7 +35,7 @@ jobs:
 
           for i in range(num_commits):
               # Update the file
-              with open("update.txt", "a") as file:
+              with open("file.txt", "a") as file:
                   file.write(f"Commit {i+1} on {datetime.now()}\n")
 
               # Configure Git and commit
